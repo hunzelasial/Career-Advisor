@@ -5,15 +5,6 @@ class RoadmapScreen extends StatefulWidget {
 
   final CareerRole? role;
 
-  static const steps = [
-    ('Build foundations', 'Learn programming fundamentals', '1-6 months'),
-    ('Gain practical skills', 'Work on real projects', '6-12 months'),
-    ('Build your portfolio', 'Showcase your work', '1-2 years'),
-    ('Apply for junior roles', 'Start your professional journey', '2+ years'),
-    ('Grow your experience', 'Deepen and specialize your skills', '2-5 years'),
-    ('Advance your career', 'Lead projects and mentor others', '5+ years'),
-  ];
-
   @override
   State<RoadmapScreen> createState() => _RoadmapScreenState();
 }
@@ -22,16 +13,20 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
   final _store = CareerPreferencesStore();
   Set<int> _completed = <int>{};
 
-  String get _roleId => widget.role?.id ?? 'software-engineer';
+  CareerRole get _role =>
+      widget.role ?? _RecommendationsScreenState.roles.first;
 
-  List<(String, String, String)> get _steps => widget.role == null
-      ? RoadmapScreen.steps
-      : widget.role!.learningPath
+  String get _roleId => _role.id;
+
+  List<CareerRoadmapStep> get _steps => _role.roadmap.isNotEmpty
+      ? _role.roadmap
+      : _role.learningPath
             .map(
-              (step) => (
-                step,
-                'Practice this skill and add the result to your portfolio.',
-                'Milestone',
+              (step) => CareerRoadmapStep(
+                title: step,
+                description:
+                    'Practice this skill, ask for feedback, and keep evidence of what you learn.',
+                duration: 'Milestone',
               ),
             )
             .toList();
@@ -44,7 +39,13 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
 
   Future<void> _loadProgress() async {
     final completed = await _store.loadCompletedSteps(_roleId);
-    if (mounted) setState(() => _completed = completed);
+    if (mounted) {
+      setState(
+        () => _completed = completed
+            .where((index) => index >= 0 && index < _steps.length)
+            .toSet(),
+      );
+    }
   }
 
   Future<void> _toggleStep(int index, bool value) async {
@@ -64,34 +65,48 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 26),
       children: [
         Text(
-          widget.role?.title ?? 'Software Engineer',
+          _role.title,
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 5),
         const Text(
-          'Your progress is saved on this device.',
+          'A flexible guide: adapt the pace to your situation and local requirements.',
           style: TextStyle(color: _muted, fontSize: 12),
         ),
+        const SizedBox(height: 13),
         AppPanel(
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: LinearProgressIndicator(
-                    value: _steps.isEmpty
-                        ? 0
-                        : _completed.length / _steps.length,
-                    minHeight: 7,
-                    color: _cyan,
-                    backgroundColor: _line,
+              Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: LinearProgressIndicator(
+                        value: _steps.isEmpty
+                            ? 0
+                            : (_completed.length / _steps.length).clamp(
+                                0.0,
+                                1.0,
+                              ),
+                        minHeight: 7,
+                        color: _cyan,
+                        backgroundColor: _line,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '${_completed.length}/${_steps.length} done',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                '${_completed.length}/${_steps.length} done',
-                style: const TextStyle(fontSize: 11),
+              const SizedBox(height: 11),
+              const Text(
+                'Use each milestone to build skills, experience, and proof of your work. Check official local rules for regulated careers.',
+                style: TextStyle(color: _muted, fontSize: 11, height: 1.45),
               ),
             ],
           ),
@@ -105,6 +120,50 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
             isLast: index == _steps.length - 1,
             completed: _completed.contains(index),
             onChanged: (value) => _toggleStep(index, value),
+          ),
+        ),
+        const SizedBox(height: 7),
+        AppPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Make the plan work for you',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 10),
+              for (final tip in [
+                'Set a realistic weekly study goal and review it every month.',
+                'Save evidence of projects, placements, feedback, and skills in one portfolio or folder.',
+                'Ask teachers, career advisers, and people in the field for feedback and informational conversations.',
+                'Compare course cost, entry requirements, financial aid, and local job demand before committing.',
+                'Tailor your CV to each role; practice interviews and apply for internships or supervised entry-level experience.',
+              ])
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.check_circle_outline,
+                        color: _cyan,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          tip,
+                          style: const TextStyle(
+                            color: _muted,
+                            fontSize: 11,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 15),
@@ -133,7 +192,7 @@ class _RoadmapStep extends StatelessWidget {
   });
 
   final int index;
-  final (String, String, String) step;
+  final CareerRoadmapStep step;
   final bool isLast;
   final bool completed;
   final ValueChanged<bool> onChanged;
@@ -187,7 +246,7 @@ class _RoadmapStep extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        step.$1,
+                        step.title,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
@@ -198,12 +257,12 @@ class _RoadmapStep extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        step.$2,
+                        step.description,
                         style: const TextStyle(color: _muted, fontSize: 11),
                       ),
                       const SizedBox(height: 7),
                       Text(
-                        step.$3,
+                        step.duration,
                         style: const TextStyle(color: _cyan, fontSize: 10),
                       ),
                     ],

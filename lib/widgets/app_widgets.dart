@@ -348,13 +348,13 @@ class CareerRow extends StatelessWidget {
   const CareerRow({
     super.key,
     required this.name,
-    required this.score,
+    required this.detail,
     required this.icon,
     required this.color,
   });
 
   final String name;
-  final int score;
+  final String detail;
   final IconData icon;
   final Color color;
 
@@ -387,10 +387,7 @@ class CareerRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 3),
-              Text(
-                'Strong match · $score%',
-                style: const TextStyle(color: _cyan, fontSize: 10),
-              ),
+              Text(detail, style: const TextStyle(color: _cyan, fontSize: 10)),
             ],
           ),
         ),

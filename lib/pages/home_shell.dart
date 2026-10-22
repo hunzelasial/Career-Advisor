@@ -81,7 +81,7 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDestination(
             icon: Icon(Icons.school_outlined),
             selectedIcon: Icon(Icons.school),
-            label: 'Careers',
+            label: 'Jobs',
           ),
           NavigationDestination(
             icon: Icon(Icons.bar_chart_outlined),

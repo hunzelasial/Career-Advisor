@@ -110,7 +110,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             ToolTile(
               icon: Icons.school_outlined,
-              title: 'Career matches',
+              title: 'Jobs & career paths',
               color: _cyan,
               imageUrl:
                   'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80',
@@ -151,7 +151,7 @@ class DashboardScreen extends StatelessWidget {
         const SizedBox(height: 22),
         Row(
           children: [
-            const Expanded(child: SectionTitle('Top career matches')),
+            const Expanded(child: SectionTitle('Explore different fields')),
             TextButton(
               onPressed: () => onOpenTab(1),
               child: const Text('See all'),
@@ -159,15 +159,21 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         const CareerRow(
-          name: 'Software Engineer',
-          score: 92,
-          icon: Icons.terminal,
+          name: 'Nurse',
+          detail: 'Healthcare',
+          icon: Icons.health_and_safety_outlined,
           color: _cyan,
         ),
         const CareerRow(
-          name: 'Data Scientist',
-          score: 88,
-          icon: Icons.insights,
+          name: 'Teacher / Educator',
+          detail: 'Education',
+          icon: Icons.menu_book_outlined,
+          color: Color(0xFFFFC857),
+        ),
+        const CareerRow(
+          name: 'Accountant',
+          detail: 'Business & Finance',
+          icon: Icons.account_balance_outlined,
           color: Color(0xFF9C83FF),
         ),
         FutureBuilder<Set<String>>(

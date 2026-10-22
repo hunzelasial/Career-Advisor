@@ -13,6 +13,9 @@ class CareerRole {
     required this.growth,
     required this.category,
     required this.learningPath,
+    this.roadmap = const [],
+    this.education = 'Requirements vary by location and employer.',
+    this.tryIt = const [],
   });
 
   final String title;
@@ -26,8 +29,23 @@ class CareerRole {
   final String growth;
   final String category;
   final List<String> learningPath;
+  final List<CareerRoadmapStep> roadmap;
+  final String education;
+  final List<String> tryIt;
 
   String get id => title.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+}
+
+class CareerRoadmapStep {
+  const CareerRoadmapStep({
+    required this.title,
+    required this.description,
+    required this.duration,
+  });
+
+  final String title;
+  final String description;
+  final String duration;
 }
 
 class CareerTrend {
