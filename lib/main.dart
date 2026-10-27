@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'apis/auth_api.dart';
 import 'apis/user_api.dart';
@@ -19,6 +20,7 @@ part 'pages/chat_screen.dart';
 part 'pages/roadmap_screen.dart';
 part 'pages/profile_screen.dart';
 part 'pages/notification_preferences_screen.dart';
+part 'pages/feature_screens.dart';
 part 'widgets/app_widgets.dart';
 
 void main() => runApp(const CareerAdvisorApp());

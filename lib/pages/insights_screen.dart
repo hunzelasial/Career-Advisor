@@ -59,12 +59,19 @@ class _InsightsScreenState extends State<InsightsScreen> {
     ),
   ];
 
+  final _location = TextEditingController(text: 'Pakistan');
   bool _industryMode = false;
   String _industry = 'All';
 
   List<CareerTrend> get _visibleTrends => !_industryMode || _industry == 'All'
       ? _trends
       : _trends.where((trend) => trend.category == _industry).toList();
+
+  @override
+  void dispose() {
+    _location.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -83,6 +90,29 @@ class _InsightsScreenState extends State<InsightsScreen> {
       const Text(
         'Illustrative market snapshot',
         style: TextStyle(color: _muted, fontSize: 10),
+      ),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _location,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => _searchMarket(),
+              decoration: const InputDecoration(
+                labelText: 'Search live market information',
+                prefixIcon: Icon(Icons.public),
+                isDense: true,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton.filled(
+            tooltip: 'Search Google',
+            onPressed: _searchMarket,
+            icon: const Icon(Icons.search),
+          ),
+        ],
       ),
       const SizedBox(height: 18),
       SegmentedButton<bool>(
@@ -159,6 +189,11 @@ class _InsightsScreenState extends State<InsightsScreen> {
         ),
       ),
     ],
+  );
+
+  Future<void> _searchMarket() => _openGoogleSearch(
+    context,
+    'job market hiring trends career opportunities ${_location.text.trim()}',
   );
 }
 

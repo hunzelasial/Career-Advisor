@@ -30,26 +30,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final title = TextEditingController(
       text: widget.profile['professionalTitle']?.toString() ?? '',
     );
+    final phone = TextEditingController(
+      text: widget.profile['phoneNumber']?.toString() ?? '',
+    );
+    final dateOfBirth = TextEditingController(
+      text: widget.profile['dateOfBirth']?.toString() ?? '',
+    );
+    final gender = TextEditingController(
+      text: widget.profile['gender']?.toString() ?? '',
+    );
     final updated = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _panel,
         title: const Text('Edit profile'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: name,
-              decoration: const InputDecoration(labelText: 'Full name'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: title,
-              decoration: const InputDecoration(
-                labelText: 'Professional title',
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: name,
+                decoration: const InputDecoration(labelText: 'Full name'),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              TextField(
+                controller: title,
+                decoration: const InputDecoration(
+                  labelText: 'Professional title',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: phone,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(labelText: 'Phone number'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: dateOfBirth,
+                decoration: const InputDecoration(
+                  labelText: 'Date of birth',
+                  hintText: 'YYYY-MM-DD',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: gender,
+                decoration: const InputDecoration(labelText: 'Gender'),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -60,6 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () => Navigator.pop(context, {
               'fullName': name.text.trim(),
               'professionalTitle': title.text.trim(),
+              'phoneNumber': phone.text.trim(),
+              'dateOfBirth': dateOfBirth.text.trim(),
+              'gender': gender.text.trim(),
             }),
             child: const Text('Save'),
           ),
@@ -68,6 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     name.dispose();
     title.dispose();
+    phone.dispose();
+    dateOfBirth.dispose();
+    gender.dispose();
     if (updated == null || !mounted) return;
     setState(() => _busy = true);
     try {
@@ -170,6 +206,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+        AppPanel(
+          child: Column(
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Personal details',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _ProfileDetailRow(
+                label: 'Professional title',
+                value: widget.profile['professionalTitle']?.toString(),
+              ),
+              _ProfileDetailRow(
+                label: 'Phone',
+                value: widget.profile['phoneNumber']?.toString(),
+              ),
+              _ProfileDetailRow(
+                label: 'Date of birth',
+                value: widget.profile['dateOfBirth']?.toString(),
+              ),
+              _ProfileDetailRow(
+                label: 'Gender',
+                value: widget.profile['gender']?.toString(),
+              ),
+              FutureBuilder<String>(
+                future: _preferences.loadCareerGoal(),
+                builder: (context, snapshot) => _ProfileDetailRow(
+                  label: 'Career goal',
+                  value: snapshot.data,
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 15),
         ProfileAction(
           icon: Icons.edit_outlined,
@@ -202,10 +276,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         ProfileAction(
           icon: Icons.help_outline,
-          label: 'Help & support',
-          onTap: () => showMessage(
-            context,
-            'Contact support from your account provider.',
+          label: 'About & help',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const AboutHelpScreen()),
           ),
         ),
         const SizedBox(height: 12),
@@ -221,4 +294,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+}
+
+class _ProfileDetailRow extends StatelessWidget {
+  const _ProfileDetailRow({required this.label, required this.value});
+
+  final String label;
+  final String? value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(color: _muted, fontSize: 11),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Text(
+            value == null || value!.trim().isEmpty ? 'Not provided' : value!,
+            textAlign: TextAlign.end,
+            style: const TextStyle(fontSize: 11),
+          ),
+        ),
+      ],
+    ),
+  );
 }

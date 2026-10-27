@@ -39,6 +39,40 @@ class CareerPreferencesStore {
         steps.map((step) => step.toString()).toList(),
       );
 
+  Future<Set<String>> loadCompletedChallenges() async =>
+      (await _preferences.getStringList('completedCareerChallenges') ??
+              <String>[])
+          .toSet();
+
+  Future<void> saveCompletedChallenges(Set<String> challenges) => _preferences
+      .setStringList('completedCareerChallenges', challenges.toList());
+
+  Future<List<Map<String, String>>> loadInternshipTracker() async {
+    final encoded = await _preferences.getString('careerInternshipTracker');
+    if (encoded == null) return <Map<String, String>>[];
+    try {
+      final decoded = jsonDecode(encoded);
+      if (decoded is! List) return <Map<String, String>>[];
+      return decoded
+          .whereType<Map>()
+          .map(
+            (entry) => entry.map(
+              (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
+            ),
+          )
+          .where((entry) => entry['id']?.isNotEmpty == true)
+          .toList();
+    } on FormatException {
+      return <Map<String, String>>[];
+    }
+  }
+
+  Future<void> saveInternshipTracker(List<Map<String, String>> internships) =>
+      _preferences.setString(
+        'careerInternshipTracker',
+        jsonEncode(internships),
+      );
+
   Future<List<ChatMessage>> loadChatHistory() async {
     final encoded = await _preferences.getString('careerChatHistory');
     if (encoded == null) return <ChatMessage>[];

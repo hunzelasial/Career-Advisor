@@ -59,7 +59,11 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 19),
-        CareerHero(onTap: () => onOpenTab(1)),
+        CareerHero(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const FeatureHubScreen()),
+          ),
+        ),
         const SizedBox(height: 16),
         FutureBuilder<String>(
           future: CareerPreferencesStore().loadCareerGoal(),
@@ -140,6 +144,52 @@ class DashboardScreen extends StatelessWidget {
                   'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=800&q=80',
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const RoadmapScreen()),
+              ),
+            ),
+            ToolTile(
+              icon: Icons.work_outline,
+              title: 'Find internships',
+              color: const Color(0xFF78D9FF),
+              imageUrl:
+                  'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const InternshipFinderScreen(),
+                ),
+              ),
+            ),
+            ToolTile(
+              icon: Icons.psychology_outlined,
+              title: 'Skill gap analyzer',
+              color: const Color(0xFFB897FF),
+              imageUrl:
+                  'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SkillGapScreen()),
+              ),
+            ),
+            ToolTile(
+              icon: Icons.record_voice_over_outlined,
+              title: 'Interview practice',
+              color: const Color(0xFFFFA76B),
+              imageUrl:
+                  'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const InterviewPrepScreen(),
+                ),
+              ),
+            ),
+            ToolTile(
+              icon: Icons.school_outlined,
+              title: 'Degrees & universities',
+              color: const Color(0xFFFFC857),
+              imageUrl:
+                  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const UniversityGuideScreen(),
+                ),
               ),
             ),
           ],
